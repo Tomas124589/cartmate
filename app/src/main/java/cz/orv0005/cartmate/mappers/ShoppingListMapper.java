@@ -14,14 +14,15 @@ import java.util.Locale;
 import cz.orv0005.cartmate.SQLiteHelper;
 import cz.orv0005.cartmate.models.ShoppingList;
 
-public class ShoppingListMapper {
-
-    private final SQLiteHelper helper;
-    private static final String TABLE = "lists";
+public class ShoppingListMapper extends DatabaseMapper {
 
     public ShoppingListMapper(SQLiteHelper helper) {
+        super(helper);
+    }
 
-        this.helper = helper;
+    @Override
+    public String getTableName() {
+        return "lists";
     }
 
     public long save(ShoppingList list) throws SQLiteException {
@@ -36,10 +37,10 @@ public class ShoppingListMapper {
 
         long id = list.getId();
         if (id == 0) {
-            id = db.insertOrThrow(TABLE, null, values);
+            id = db.insertOrThrow(this.getTableName(), null, values);
 
         } else {
-            db.update(TABLE, values, "id=?", new String[]{String.valueOf(list.getId())});
+            db.update(this.getTableName(), values, "id=?", new String[]{String.valueOf(list.getId())});
         }
 
         db.close();
@@ -53,7 +54,7 @@ public class ShoppingListMapper {
 
         SQLiteDatabase db = this.helper.getReadableDatabase();
 
-        Cursor c = db.query(TABLE, null, "id = ?", new String[]{String.valueOf(id)}, null, null, null);
+        Cursor c = db.query(this.getTableName(), null, "id = ?", new String[]{String.valueOf(id)}, null, null, null);
 
         while (c.moveToNext()) {
 
@@ -78,7 +79,7 @@ public class ShoppingListMapper {
 
         SQLiteDatabase db = this.helper.getReadableDatabase();
 
-        Cursor c = db.query(TABLE, null, null, null, null, null, null);
+        Cursor c = db.query(this.getTableName(), null, null, null, null, null, null);
 
         while (c.moveToNext()) {
 

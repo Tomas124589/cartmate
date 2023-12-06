@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -85,6 +86,34 @@ public class ShoppingListDetailFragment extends Fragment {
         }
 
         view.findViewById(R.id.addListItemFab).setOnClickListener(view1 -> showAddListItem());
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getAdapterPosition();
+
+                if (direction == ItemTouchHelper.LEFT) {
+
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+                    builder.setMessage(R.string.do_you_want_to_remove_this_item).setPositiveButton(R.string.yes, (dialogInterface, i) -> {
+
+                        ShoppingListItemMapper m = new ShoppingListItemMapper(new SQLiteHelper(requireContext()));
+                        m.delete(items.get(position).getId());
+
+                        items.remove(position);
+
+                        Objects.requireNonNull(itemsRecyclerView.getAdapter()).notifyItemRemoved(position);
+                    }).setNegativeButton(R.string.no, (dialogInterface, i) -> Objects.requireNonNull(itemsRecyclerView.getAdapter()).notifyItemChanged(position)).show();
+                }
+            }
+        });
+        itemTouchHelper.attachToRecyclerView(itemsRecyclerView);
 
         return view;
     }

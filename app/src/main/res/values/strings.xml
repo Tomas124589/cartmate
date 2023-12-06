@@ -61,5 +61,8 @@
     <string name="shop_name">Shop name</string>
     <string name="date">Date</string>
     <string name="date_of_shopping">Date of shopping</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
+    <string name="do_you_want_to_remove_this_item">Do you want to remove this item?</string>
     <!-- TODO: Remove or change this placeholder text -->
 </resources>

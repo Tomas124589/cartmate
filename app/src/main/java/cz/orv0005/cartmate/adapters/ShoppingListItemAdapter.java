@@ -67,8 +67,6 @@ public class ShoppingListItemAdapter extends Adapter<RecyclerView.ViewHolder> {
             notifyItemChanged(position);
 
         });
-
-
     }
 
     @Override
