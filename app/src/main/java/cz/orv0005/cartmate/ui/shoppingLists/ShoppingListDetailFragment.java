@@ -113,7 +113,7 @@ public class ShoppingListDetailFragment extends Fragment {
 
     private void appendShoppingListItem(ShoppingListItem i) {
 
-        i.setId(this.shoppingListItemMapper.insert(i));
+        i.setId(this.shoppingListItemMapper.save(i));
         this.items.add(i);
 
         Objects.requireNonNull(this.itemsRecyclerView.getAdapter()).notifyItemInserted(

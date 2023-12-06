@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void appendShoppingList(ShoppingList l) {
 
-        l.setId(this.shoppingListMapper.insert(l));
+        l.setId(this.shoppingListMapper.save(l));
         this.shoppingLists.add(l);
 
         Objects.requireNonNull(this.shoppingListRecyclerView.getAdapter()).notifyItemInserted(

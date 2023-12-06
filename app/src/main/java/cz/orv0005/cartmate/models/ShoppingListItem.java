@@ -5,7 +5,7 @@ public class ShoppingListItem {
     private final long idList;
     private final long idItem;
     private final String name;
-    private final Integer count;
+    private Integer count;
 
     public ShoppingListItem(Long idList, Long idItem, String name, Integer count) {
         this.idList = idList;
@@ -31,8 +31,11 @@ public class ShoppingListItem {
     }
 
     public String getName() {
-
         return name;
+    }
+
+    public void setCount(Integer count) {
+        this.count = count;
     }
 
     public Integer getCount() {

@@ -24,7 +24,7 @@ public class ShoppingListMapper {
         this.helper = helper;
     }
 
-    public long insert(ShoppingList list) throws SQLiteException {
+    public long save(ShoppingList list) throws SQLiteException {
 
         SQLiteDatabase db = helper.getWritableDatabase();
         DateTimeFormatter f = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.getDefault());
@@ -34,7 +34,14 @@ public class ShoppingListMapper {
         values.put("store", list.getShopName());
         values.put("date", list.getDate().format(f));
 
-        long id = db.insertOrThrow(TABLE, null, values);
+        long id = list.getId();
+        if (id == 0) {
+            id = db.insertOrThrow(TABLE, null, values);
+
+        } else {
+            db.update(TABLE, values, "id=?", new String[]{String.valueOf(list.getId())});
+        }
+
         db.close();
 
         return id;

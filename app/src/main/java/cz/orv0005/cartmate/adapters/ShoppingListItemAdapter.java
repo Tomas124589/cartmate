@@ -3,6 +3,7 @@ package cz.orv0005.cartmate.adapters;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -12,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView.Adapter;
 import java.util.List;
 
 import cz.orv0005.cartmate.R;
+import cz.orv0005.cartmate.SQLiteHelper;
+import cz.orv0005.cartmate.mappers.ShoppingListItemMapper;
 import cz.orv0005.cartmate.models.ShoppingListItem;
 import cz.orv0005.cartmate.ui.shoppingLists.OnClickListener;
 
@@ -38,10 +41,34 @@ public class ShoppingListItemAdapter extends Adapter<RecyclerView.ViewHolder> {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
 
         ShoppingListItem item = items.get(position);
-        ShoppingListItemViewHolder listViewHolder = (ShoppingListItemViewHolder) holder;
+        ShoppingListItemViewHolder itemViewHolder = (ShoppingListItemViewHolder) holder;
 
-        listViewHolder.textViewName.setText(item.getName());
-        listViewHolder.textViewCount.setText(item.getCount().toString());
+        itemViewHolder.textViewName.setText(item.getName());
+        itemViewHolder.textViewCount.setText(item.getCount().toString());
+
+        itemViewHolder.btnMinus.setOnClickListener(view -> {
+            item.setCount(item.getCount() - 1);
+
+            if (item.getCount() < 0)
+                item.setCount(0);
+
+            ShoppingListItemMapper m = new ShoppingListItemMapper(new SQLiteHelper(view.getContext()));
+            m.save(item);
+
+            notifyItemChanged(position);
+        });
+
+        itemViewHolder.btnPlus.setOnClickListener(view -> {
+            item.setCount(item.getCount() + 1);
+
+            ShoppingListItemMapper m = new ShoppingListItemMapper(new SQLiteHelper(view.getContext()));
+            m.save(item);
+
+            notifyItemChanged(position);
+
+        });
+
+
     }
 
     @Override
@@ -52,11 +79,15 @@ public class ShoppingListItemAdapter extends Adapter<RecyclerView.ViewHolder> {
     public static class ShoppingListItemViewHolder extends RecyclerView.ViewHolder implements OnClickListener {
         TextView textViewName;
         TextView textViewCount;
+        Button btnMinus;
+        Button btnPlus;
 
         ShoppingListItemViewHolder(@NonNull View itemView, OnClickListener listener) {
             super(itemView);
             textViewName = itemView.findViewById(R.id.name);
             textViewCount = itemView.findViewById(R.id.count);
+            btnMinus = itemView.findViewById(R.id.btn_minus);
+            btnPlus = itemView.findViewById(R.id.btn_plus);
 
             itemView.setOnClickListener(view -> {
                 if (listener != null) {

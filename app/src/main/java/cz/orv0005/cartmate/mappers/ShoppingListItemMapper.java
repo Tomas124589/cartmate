@@ -21,7 +21,7 @@ public class ShoppingListItemMapper {
         this.helper = helper;
     }
 
-    public long insert(ShoppingListItem item) throws SQLiteException {
+    public long save(ShoppingListItem item) throws SQLiteException {
 
         SQLiteDatabase db = helper.getWritableDatabase();
 
@@ -31,7 +31,15 @@ public class ShoppingListItemMapper {
         values.put("name", item.getName());
         values.put("count", item.getCount());
 
-        long id = db.insertOrThrow(TABLE, null, values);
+        long id = item.getId();
+        if (id == 0) {
+            id = db.insertOrThrow(TABLE, null, values);
+
+        } else {
+            db.update(TABLE, values, "id=?", new String[]{String.valueOf(item.getId())});
+
+        }
+
         db.close();
 
         return id;
