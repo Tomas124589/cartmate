@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,6 +26,8 @@ import cz.orv0005.cartmate.R;
 import cz.orv0005.cartmate.SQLiteHelper;
 import cz.orv0005.cartmate.adapters.ShoppingListItemAdapter;
 import cz.orv0005.cartmate.mappers.ShoppingListItemMapper;
+import cz.orv0005.cartmate.mappers.ShoppingListMapper;
+import cz.orv0005.cartmate.models.ShoppingList;
 import cz.orv0005.cartmate.models.ShoppingListItem;
 
 public class ShoppingListDetailFragment extends Fragment {
@@ -32,7 +35,7 @@ public class ShoppingListDetailFragment extends Fragment {
     private ShoppingListItemMapper shoppingListItemMapper;
     private List<ShoppingListItem> items = new ArrayList<>();
     private RecyclerView itemsRecyclerView;
-    private long shoppingListId;
+    private ShoppingList shoppingList;
 
 
     public ShoppingListDetailFragment() {
@@ -40,7 +43,6 @@ public class ShoppingListDetailFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
     }
 
@@ -52,13 +54,17 @@ public class ShoppingListDetailFragment extends Fragment {
 
         if (args != null && args.containsKey("shoppingListId")) {
 
-            this.shoppingListId = args.getLong("shoppingListId");
+            ShoppingListMapper m = new ShoppingListMapper(new SQLiteHelper(requireContext()));
+
+            this.shoppingList = m.fetch(args.getLong("shoppingListId"));
         }
+
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle("Shopping List \"" + this.shoppingList.getName() + "\"");
 
         View view = inflater.inflate(R.layout.fragment_shopping_list_detail, container, false);
 
         this.shoppingListItemMapper = new ShoppingListItemMapper(new SQLiteHelper(getContext()));
-        this.items = this.shoppingListItemMapper.fetchAllForList(this.shoppingListId);
+        this.items = this.shoppingListItemMapper.fetchAllForList(this.shoppingList.getId());
 
         this.itemsRecyclerView = view.findViewById(R.id.itemsRecyclerView);
         this.itemsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -100,7 +106,7 @@ public class ShoppingListDetailFragment extends Fragment {
                     Integer count = Integer.parseInt(etCount.getText().toString());
 
                     appendShoppingListItem(new ShoppingListItem(
-                            shoppingListId,
+                            this.shoppingList.getId(),
                             0L,
                             name,
                             count

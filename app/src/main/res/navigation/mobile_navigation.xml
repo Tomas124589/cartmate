@@ -19,7 +19,7 @@
     <fragment
         android:id="@+id/shoppingListDetail"
         android:name="cz.orv0005.cartmate.ui.shoppingLists.ShoppingListDetailFragment"
-        android:label="fragment_shopping_list_detail"
+        android:label="Shopping List"
         tools:layout="@layout/fragment_shopping_list_detail" />
 
 </navigation>

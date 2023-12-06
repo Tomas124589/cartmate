@@ -47,6 +47,31 @@ public class ShoppingListMapper {
         return id;
     }
 
+    public ShoppingList fetch(long id) throws SQLiteException {
+
+        ShoppingList result = null;
+
+        SQLiteDatabase db = this.helper.getReadableDatabase();
+
+        Cursor c = db.query(TABLE, null, "id = ?", new String[]{String.valueOf(id)}, null, null, null);
+
+        while (c.moveToNext()) {
+
+            result = new ShoppingList(
+                    c.getString(c.getColumnIndexOrThrow("name")),
+                    c.getString(c.getColumnIndexOrThrow("store")),
+                    c.getString(c.getColumnIndexOrThrow("date"))
+            );
+
+            result.setId(c.getLong(c.getColumnIndexOrThrow("id")));
+        }
+
+        c.close();
+        db.close();
+
+        return result;
+    }
+
     public List<ShoppingList> fetchAll() throws SQLiteException, ParseException {
 
         List<ShoppingList> result = new ArrayList<>();
