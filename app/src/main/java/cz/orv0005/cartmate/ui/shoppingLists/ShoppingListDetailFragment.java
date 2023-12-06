@@ -67,12 +67,6 @@ public class ShoppingListDetailFragment extends Fragment {
             ShoppingListItem i = items.get(position);
 
             Log.d("itemName", i.getName());
-            //                NavController navController = Navigation.findNavController(mainActivity, R.id.nav_host_fragment_content_main);
-            //
-            //                Bundle b = new Bundle();
-            //                b.putLong("shoppingListId", i.getId());
-            //
-            //                navController.navigate(R.id.shoppingListDetail, b);
         }));
 
         MainActivity mainActivity = (MainActivity) getActivity();
