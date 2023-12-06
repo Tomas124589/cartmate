@@ -1,20 +1,16 @@
 package cz.orv0005.cartmate.models;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.Locale;
 
 import cz.orv0005.cartmate.SQLiteHelper;
 
 public class ShoppingList {
     private long id = 0;
-    private String name;
-    private String shopName;
+    private final String name;
+    private final String shopName;
     private LocalDate date;
 
-    public ShoppingList(String name, String shopName, String date) throws ParseException {
+    public ShoppingList(String name, String shopName, String date) {
         this(name, shopName, (LocalDate) null);
         this.date = SQLiteHelper.str2LocalDate(date);
     }

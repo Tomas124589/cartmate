@@ -16,5 +16,10 @@
         android:name="cz.orv0005.cartmate.ui.products.ProductsFragment"
         android:label="@string/menu_gallery"
         tools:layout="@layout/fragment_products" />
+    <fragment
+        android:id="@+id/shoppingListDetail"
+        android:name="cz.orv0005.cartmate.ui.shoppingLists.ShoppingListDetailFragment"
+        android:label="fragment_shopping_list_detail"
+        tools:layout="@layout/fragment_shopping_list_detail" />
 
 </navigation>

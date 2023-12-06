@@ -1,27 +1,27 @@
 package cz.orv0005.cartmate.adapters;
 
-import android.util.Log;
+import static androidx.recyclerview.widget.RecyclerView.*;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
 import cz.orv0005.cartmate.R;
 import cz.orv0005.cartmate.SQLiteHelper;
 import cz.orv0005.cartmate.models.ShoppingList;
-import cz.orv0005.cartmate.ui.shoppingLists.ShoppingListListener;
+import cz.orv0005.cartmate.ui.shoppingLists.OnClickListener;
 
-public class ShoppingListAdapter extends RecyclerView.Adapter {
+public class ShoppingListAdapter extends Adapter<ViewHolder> {
 
-    private List<ShoppingList> shoppingLists;
-    private final ShoppingListListener listener;
+    private final List<ShoppingList> shoppingLists;
+    private final OnClickListener listener;
 
-    public ShoppingListAdapter(List<ShoppingList> shoppingLists, ShoppingListListener listener) {
+    public ShoppingListAdapter(List<ShoppingList> shoppingLists, OnClickListener listener) {
 
         this.shoppingLists = shoppingLists;
         this.listener = listener;
@@ -29,14 +29,14 @@ public class ShoppingListAdapter extends RecyclerView.Adapter {
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.shopping_list_row, parent, false);
         return new ShoppingListViewHolder(view, listener);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
         ShoppingList shoppingList = shoppingLists.get(position);
         ShoppingListViewHolder listViewHolder = (ShoppingListViewHolder) holder;
@@ -51,26 +51,23 @@ public class ShoppingListAdapter extends RecyclerView.Adapter {
         return shoppingLists.size();
     }
 
-    public static class ShoppingListViewHolder extends RecyclerView.ViewHolder implements ShoppingListListener {
+    public static class ShoppingListViewHolder extends ViewHolder implements OnClickListener {
         TextView textViewName;
         TextView textViewShopName;
         TextView textViewDate;
 
-        ShoppingListViewHolder(@NonNull View itemView, ShoppingListListener listener) {
+        ShoppingListViewHolder(@NonNull View itemView, OnClickListener listener) {
             super(itemView);
             textViewName = itemView.findViewById(R.id.name);
-            textViewShopName = itemView.findViewById(R.id.shop_name);
+            textViewShopName = itemView.findViewById(R.id.count);
             textViewDate = itemView.findViewById(R.id.date);
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (listener != null) {
+            itemView.setOnClickListener(view -> {
+                if (listener != null) {
 
-                        int pos = getAdapterPosition();
-                        if (pos != RecyclerView.NO_POSITION) {
-                            listener.onClick(pos);
-                        }
+                    int pos = getAdapterPosition();
+                    if (pos != NO_POSITION) {
+                        listener.onClick(pos);
                     }
                 }
             });
@@ -78,8 +75,6 @@ public class ShoppingListAdapter extends RecyclerView.Adapter {
 
         @Override
         public void onClick(int position) {
-
-            Log.d("YOU", "AAA");
         }
     }
 }

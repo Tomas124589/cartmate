@@ -2,7 +2,6 @@ package cz.orv0005.cartmate;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
 import android.text.format.DateFormat;
@@ -10,7 +9,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -34,17 +32,16 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import cz.orv0005.cartmate.adapters.ShoppingListAdapter;
 import cz.orv0005.cartmate.databinding.ActivityMainBinding;
 import cz.orv0005.cartmate.mappers.ShoppingListMapper;
 import cz.orv0005.cartmate.models.ShoppingList;
-import cz.orv0005.cartmate.ui.shoppingLists.ShoppingListListener;
 
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
-    private ActivityMainBinding binding;
     private ShoppingListMapper shoppingListMapper;
     private List<ShoppingList> shoppingLists = new ArrayList<>();
     private RecyclerView shoppingListRecyclerView;
@@ -61,16 +58,11 @@ public class MainActivity extends AppCompatActivity {
 
         this.shoppingListMapper = new ShoppingListMapper(new SQLiteHelper(this));
 
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        cz.orv0005.cartmate.databinding.ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         setSupportActionBar(binding.appBarMain.toolbar);
-        binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showAddShoppingListDialog();
-            }
-        });
+        binding.appBarMain.addShoppingListFab.setOnClickListener(view -> showAddShoppingListDialog());
 
         DrawerLayout drawer = binding.drawerLayout;
         NavigationView navigationView = binding.navView;
@@ -94,14 +86,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
         this.shoppingListRecyclerView = findViewById(R.id.shoppingListsRecyclerMenu);
-        ShoppingListAdapter adapter = new ShoppingListAdapter(this.shoppingLists, new ShoppingListListener() {
-            @Override
-            public void onClick(int position) {
+        ShoppingListAdapter adapter = new ShoppingListAdapter(this.shoppingLists, position -> {
+            ShoppingList l = shoppingLists.get(position);
 
-                ShoppingList l = shoppingLists.get(position);
+            Bundle b = new Bundle();
+            b.putLong("shoppingListId", l.getId());
 
-                Log.d("TEST", Long.toString(l.getId()));
-            }
+            navController.navigate(R.id.shoppingListDetail, b);
+
         });
         this.shoppingListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         this.shoppingListRecyclerView.setAdapter(adapter);
@@ -127,47 +119,36 @@ public class MainActivity extends AppCompatActivity {
         View dialogView = inflater.inflate(R.layout.dialog_add_list, null);
 
         EditText etName = dialogView.findViewById(R.id.editTextName);
-        EditText etShopName = dialogView.findViewById(R.id.editTextShopName);
+        EditText etShopName = dialogView.findViewById(R.id.editTextEan);
         EditText etDate = dialogView.findViewById(R.id.editTextDate);
 
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle("Add new shopping list")
                 .setView(dialogView)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
+                .setPositiveButton("OK", (dialog1, whichButton) -> {
 
-                        String name = etName.getText().toString();
-                        String shopName = etShopName.getText().toString();
-                        String date = etDate.getText().toString();
+                    String name = etName.getText().toString();
+                    String shopName = etShopName.getText().toString();
+                    String date = etDate.getText().toString();
 
-                        appendShoppingList(new ShoppingList(
-                                name,
-                                shopName,
-                                LocalDate.parse(date, DateTimeFormatter.ofPattern(MainActivity.getLocalDatePattern(MainActivity.this), Locale.getDefault()))
-                        ));
-                    }
+                    appendShoppingList(new ShoppingList(
+                            name,
+                            shopName,
+                            LocalDate.parse(date, DateTimeFormatter.ofPattern(MainActivity.getLocalDatePattern(MainActivity.this), Locale.getDefault()))
+                    ));
                 })
                 .setNegativeButton("Cancel", null).create();
 
-        DatePickerDialog.OnDateSetListener dateListener = new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int month, int day) {
-                calendar.set(Calendar.YEAR, year);
-                calendar.set(Calendar.MONTH, month);
-                calendar.set(Calendar.DAY_OF_MONTH, day);
+        DatePickerDialog.OnDateSetListener dateListener = (view, year, month, day) -> {
+            calendar.set(Calendar.YEAR, year);
+            calendar.set(Calendar.MONTH, month);
+            calendar.set(Calendar.DAY_OF_MONTH, day);
 
-                SimpleDateFormat dateFormat = new SimpleDateFormat(MainActivity.getLocalDatePattern(MainActivity.this), Locale.getDefault());
-                etDate.setText(dateFormat.format(calendar.getTime()));
-            }
+            SimpleDateFormat dateFormat = new SimpleDateFormat(MainActivity.getLocalDatePattern(MainActivity.this), Locale.getDefault());
+            etDate.setText(dateFormat.format(calendar.getTime()));
         };
 
-        etDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                new DatePickerDialog(MainActivity.this, dateListener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
-            }
-        });
+        etDate.setOnClickListener(view -> new DatePickerDialog(MainActivity.this, dateListener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show());
 
         dialog.show();
     }
@@ -177,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
         l.setId(this.shoppingListMapper.insert(l));
         this.shoppingLists.add(l);
 
-        this.shoppingListRecyclerView.getAdapter().notifyItemInserted(
+        Objects.requireNonNull(this.shoppingListRecyclerView.getAdapter()).notifyItemInserted(
                 this.shoppingLists.size() - 1
         );
     }
