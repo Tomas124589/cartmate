@@ -63,7 +63,7 @@ public class ShoppingListDetailFragment extends Fragment {
                                             this.shoppingList.getId(),
                                             0L,
                                             i.getName(),
-                                            1,
+                                            0,
                                             1
                                     ), -1
                             );
