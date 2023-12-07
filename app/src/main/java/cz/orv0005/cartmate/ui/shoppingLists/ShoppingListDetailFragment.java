@@ -58,14 +58,14 @@ public class ShoppingListDetailFragment extends Fragment {
 
                         if (i != null) {
 
-                            this.appendShoppingListItem(
+                            this.actualizeItem(
                                     new ShoppingListItem(
                                             this.shoppingList.getId(),
                                             0L,
                                             i.getName(),
                                             1,
                                             1
-                                    )
+                                    ), -1
                             );
                         } else {
                             Toast.makeText(getContext(), "Product was not found.", Toast.LENGTH_LONG).show();
@@ -109,10 +109,10 @@ public class ShoppingListDetailFragment extends Fragment {
         this.itemsRecyclerView.setAdapter(new ShoppingListItemAdapter(this.items, position -> {
             ShoppingListItem i = items.get(position);
 
-            //TODO: Implement item edit here
+            showAddListItem(i);
         }));
 
-        view.findViewById(R.id.addListItemFab).setOnClickListener(view1 -> showAddListItem());
+        view.findViewById(R.id.addListItemFab).setOnClickListener(view1 -> showAddListItem(null));
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
             @Override
@@ -143,7 +143,7 @@ public class ShoppingListDetailFragment extends Fragment {
         return view;
     }
 
-    private void showAddListItem() {
+    private void showAddListItem(ShoppingListItem item) {
 
         LayoutInflater inflater = LayoutInflater.from(getContext());
         View dialogView = inflater.inflate(R.layout.dialog_add_list_item, null);
@@ -151,18 +151,29 @@ public class ShoppingListDetailFragment extends Fragment {
         EditText etName = dialogView.findViewById(R.id.editTextName);
         EditText etCountToBuy = dialogView.findViewById(R.id.editTextCountToBuy);
 
+        if (item != null) {
+            etName.setText(item.getName());
+            etCountToBuy.setText(item.getCountToBuy().toString());
+        }
+
         AlertDialog dialog = new AlertDialog.Builder(requireContext())
                 .setTitle("Add new list item")
                 .setView(dialogView)
                 .setPositiveButton("OK", (dialog1, whichButton) -> {
 
-                    appendShoppingListItem(new ShoppingListItem(
+                    ShoppingListItem i = new ShoppingListItem(
                             this.shoppingList.getId(),
-                            0L,
+                            item == null ? 0L : item.getIdItem(),
                             etName.getText().toString(),
-                            0,
+                            item == null ? 0 : item.getCount(),
                             Integer.parseInt(etCountToBuy.getText().toString())
-                    ));
+                    );
+
+                    if (item != null) {
+                        i.setId(item.getId());
+                    }
+
+                    actualizeItem(i, this.items.indexOf(item));
                 })
                 .setNegativeButton("Cancel", null).create();
 
@@ -171,14 +182,19 @@ public class ShoppingListDetailFragment extends Fragment {
         dialog.show();
     }
 
-    private void appendShoppingListItem(ShoppingListItem i) {
-
+    private void actualizeItem(ShoppingListItem i, Integer position) {
         i.setId(this.shoppingListItemMapper.save(i));
-        this.items.add(i);
 
-        Objects.requireNonNull(this.itemsRecyclerView.getAdapter()).notifyItemInserted(
-                this.items.size() - 1
-        );
+        if (position != -1) {
+            this.items.set(position, i);
+            Objects.requireNonNull(this.itemsRecyclerView.getAdapter()).notifyItemChanged(position);
+        } else {
+            this.items.add(i);
+
+            Objects.requireNonNull(this.itemsRecyclerView.getAdapter()).notifyItemInserted(
+                    this.items.size() - 1
+            );
+        }
     }
 
     @Override
