@@ -15,16 +15,19 @@ import cz.orv0005.cartmate.R;
 import cz.orv0005.cartmate.SQLiteHelper;
 import cz.orv0005.cartmate.models.ShoppingList;
 import cz.orv0005.cartmate.ui.shoppingLists.OnClickListener;
+import cz.orv0005.cartmate.ui.shoppingLists.OnLongClickListener;
 
 public class ShoppingListAdapter extends Adapter<ViewHolder> {
 
     private final List<ShoppingList> shoppingLists;
     private final OnClickListener listener;
+    private final OnLongClickListener longClickListener;
 
-    public ShoppingListAdapter(List<ShoppingList> shoppingLists, OnClickListener listener) {
+    public ShoppingListAdapter(List<ShoppingList> shoppingLists, OnClickListener listener, OnLongClickListener longClickListener) {
 
         this.shoppingLists = shoppingLists;
         this.listener = listener;
+        this.longClickListener = longClickListener;
     }
 
     @NonNull
@@ -32,7 +35,7 @@ public class ShoppingListAdapter extends Adapter<ViewHolder> {
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.shopping_list_row, parent, false);
-        return new ShoppingListViewHolder(view, listener);
+        return new ShoppingListViewHolder(view, listener, longClickListener);
     }
 
     @Override
@@ -44,6 +47,7 @@ public class ShoppingListAdapter extends Adapter<ViewHolder> {
         listViewHolder.textViewName.setText(shoppingList.getName());
         listViewHolder.textViewShopName.setText(shoppingList.getShopName());
         listViewHolder.textViewDate.setText(SQLiteHelper.localDate2str(shoppingList.getDate()));
+        listViewHolder.textViewTotal.setText(String.valueOf(shoppingList.getTotalItemsCount()));
     }
 
     @Override
@@ -51,16 +55,18 @@ public class ShoppingListAdapter extends Adapter<ViewHolder> {
         return shoppingLists.size();
     }
 
-    public static class ShoppingListViewHolder extends ViewHolder implements OnClickListener {
+    public static class ShoppingListViewHolder extends ViewHolder {
         TextView textViewName;
         TextView textViewShopName;
         TextView textViewDate;
+        TextView textViewTotal;
 
-        ShoppingListViewHolder(@NonNull View itemView, OnClickListener listener) {
+        ShoppingListViewHolder(@NonNull View itemView, OnClickListener listener, OnLongClickListener longClickListener) {
             super(itemView);
             textViewName = itemView.findViewById(R.id.name);
             textViewShopName = itemView.findViewById(R.id.count);
             textViewDate = itemView.findViewById(R.id.date);
+            textViewTotal = itemView.findViewById(R.id.total);
 
             itemView.setOnClickListener(view -> {
                 if (listener != null) {
@@ -71,10 +77,20 @@ public class ShoppingListAdapter extends Adapter<ViewHolder> {
                     }
                 }
             });
-        }
 
-        @Override
-        public void onClick(int position) {
+            itemView.setOnLongClickListener(view -> {
+                if (longClickListener != null) {
+
+                    int pos = getAdapterPosition();
+                    if (pos != NO_POSITION) {
+                        longClickListener.onLongClick(pos);
+                    }
+
+                    return true;
+                }
+
+                return false;
+            });
         }
     }
 }

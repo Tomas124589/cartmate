@@ -77,7 +77,7 @@ public class ShoppingListItemAdapter extends Adapter<RecyclerView.ViewHolder> {
         return items.size();
     }
 
-    public static class ShoppingListItemViewHolder extends RecyclerView.ViewHolder implements OnClickListener {
+    public static class ShoppingListItemViewHolder extends RecyclerView.ViewHolder {
         TextView textViewName;
         TextView textViewCount;
         Button btnMinus;
@@ -92,17 +92,11 @@ public class ShoppingListItemAdapter extends Adapter<RecyclerView.ViewHolder> {
 
             itemView.setOnClickListener(view -> {
                 if (listener != null) {
-
                     int pos = getAdapterPosition();
-                    if (pos != RecyclerView.NO_POSITION) {
+                    if (pos != RecyclerView.NO_POSITION)
                         listener.onClick(pos);
-                    }
                 }
             });
-        }
-
-        @Override
-        public void onClick(int position) {
         }
     }
 }

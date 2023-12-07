@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(binding.appBarMain.toolbar);
 
         this.fab = binding.appBarMain.addShoppingListFab;
-        this.fab.setOnClickListener(view -> showAddShoppingListDialog());
+        this.fab.setOnClickListener(view -> showAddShoppingListDialog(null, shoppingListRecyclerView));
 
         DrawerLayout drawer = binding.drawerLayout;
         NavigationView navigationView = binding.navView;
@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
             b.putLong("shoppingListId", l.getId());
 
             navController.navigate(R.id.shoppingListDetail, b);
-        });
+        }, position -> showAddShoppingListDialog(shoppingLists.get(position), shoppingListRecyclerView));
 
         if (this.shoppingListRecyclerView != null)
             this.shoppingListRecyclerView.setAdapter(adapter);
@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
         return NavigationUI.navigateUp(navController, mAppBarConfiguration) || super.onSupportNavigateUp();
     }
 
-    private void showAddShoppingListDialog() {
+    public void showAddShoppingListDialog(ShoppingList list, RecyclerView recyclerView) {
 
         Calendar calendar = Calendar.getInstance();
 
@@ -137,22 +137,34 @@ public class MainActivity extends AppCompatActivity {
         EditText etShopName = dialogView.findViewById(R.id.editTextEan);
         EditText etDate = dialogView.findViewById(R.id.editTextDate);
 
+        if (list != null) {
+
+            etName.setText(list.getName());
+            etShopName.setText(list.getShopName());
+            etDate.setText(list.getDate().format(DateTimeFormatter.ofPattern(MainActivity.getLocalDatePattern(MainActivity.this), Locale.getDefault())));
+        }
+
         AlertDialog dialog = new AlertDialog.Builder(this)
-                .setTitle("Add new shopping list")
+                .setTitle(R.string.edit_shopping_list)
                 .setView(dialogView)
-                .setPositiveButton("OK", (dialog1, whichButton) -> {
+                .setPositiveButton(R.string.ok, (dialog1, whichButton) -> {
 
                     String name = etName.getText().toString();
                     String shopName = etShopName.getText().toString();
                     String date = etDate.getText().toString();
 
-                    appendShoppingList(new ShoppingList(
+                    ShoppingList l = new ShoppingList(
                             name,
                             shopName,
                             LocalDate.parse(date, DateTimeFormatter.ofPattern(MainActivity.getLocalDatePattern(MainActivity.this), Locale.getDefault()))
-                    ));
+                    );
+
+                    if (list != null)
+                        l.setId(list.getId());
+
+                    actualizeList(l, shoppingLists.indexOf(list), recyclerView);
                 })
-                .setNegativeButton("Cancel", null).create();
+                .setNegativeButton(R.string.cancel, null).create();
 
         DatePickerDialog.OnDateSetListener dateListener = (view, year, month, day) -> {
             calendar.set(Calendar.YEAR, year);
@@ -168,14 +180,19 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private void appendShoppingList(ShoppingList l) {
-
+    public void actualizeList(ShoppingList l, Integer position, RecyclerView recyclerView) {
         l.setId(this.shoppingListMapper.save(l));
-        this.shoppingLists.add(l);
 
-        Objects.requireNonNull(this.shoppingListRecyclerView.getAdapter()).notifyItemInserted(
-                this.shoppingLists.size() - 1
-        );
+        if (position != -1) {
+            this.shoppingLists.set(position, l);
+            Objects.requireNonNull(recyclerView.getAdapter()).notifyItemChanged(position);
+        } else {
+            this.shoppingLists.add(l);
+
+            Objects.requireNonNull(recyclerView.getAdapter()).notifyItemInserted(
+                    this.shoppingLists.size() - 1
+            );
+        }
     }
 
     public List<ShoppingList> getShoppingLists() {

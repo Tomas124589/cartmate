@@ -14,8 +14,6 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
 import java.util.List;
 import java.util.Objects;
 
@@ -36,12 +34,6 @@ public class ShoppingListsFragment extends Fragment {
 
         MainActivity mainActivity = (MainActivity) getActivity();
 
-        if (mainActivity != null) {
-            FloatingActionButton fab = mainActivity.findViewById(R.id.addShoppingListFab);
-            if (fab != null)
-                fab.show();
-        }
-
         RecyclerView shoppingListRecyclerView = binding.shoppingListsRecyclerMenu;
         List<ShoppingList> lists = Objects.requireNonNull(mainActivity).getShoppingLists();
 
@@ -54,7 +46,8 @@ public class ShoppingListsFragment extends Fragment {
             b.putLong("shoppingListId", l.getId());
 
             navController.navigate(R.id.shoppingListDetail, b);
-        });
+        }, position -> mainActivity.showAddShoppingListDialog(lists.get(position), shoppingListRecyclerView));
+
         shoppingListRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         shoppingListRecyclerView.setAdapter(adapter);
 
