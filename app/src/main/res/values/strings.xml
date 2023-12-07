@@ -34,4 +34,5 @@
     <string name="count_to_buy_is_empty">Count to buy is empty</string>
     <string name="scan_code">Scan code</string>
     <string name="shopping_list">Shopping List</string>
+    <string name="logo" translatable="false">Logo</string>
 </resources>
