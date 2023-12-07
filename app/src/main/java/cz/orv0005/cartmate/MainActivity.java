@@ -12,16 +12,17 @@ import android.view.Menu;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.ParseException;
@@ -46,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
     private List<ShoppingList> shoppingLists = new ArrayList<>();
     private RecyclerView shoppingListRecyclerView;
 
+    private FloatingActionButton fab;
+
     public static String getLocalDatePattern(Context context) {
 
         SimpleDateFormat f = (SimpleDateFormat) DateFormat.getDateFormat(context);
@@ -56,13 +59,17 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+
         this.shoppingListMapper = new ShoppingListMapper(new SQLiteHelper(this));
 
         cz.orv0005.cartmate.databinding.ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         setSupportActionBar(binding.appBarMain.toolbar);
-        binding.appBarMain.addShoppingListFab.setOnClickListener(view -> showAddShoppingListDialog());
+
+        this.fab = binding.appBarMain.addShoppingListFab;
+        this.fab.setOnClickListener(view -> showAddShoppingListDialog());
 
         DrawerLayout drawer = binding.drawerLayout;
         NavigationView navigationView = binding.navView;
@@ -71,6 +78,14 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+
+        navController.addOnDestinationChangedListener((navController1, navDestination, bundle) -> {
+            if (navDestination.getId() != R.id.nav_shopping_lists) {
+                this.fab.hide();
+            } else {
+                this.fab.show();
+            }
+        });
 
         try {
 
@@ -93,10 +108,10 @@ public class MainActivity extends AppCompatActivity {
             b.putLong("shoppingListId", l.getId());
 
             navController.navigate(R.id.shoppingListDetail, b);
-
         });
-        this.shoppingListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        this.shoppingListRecyclerView.setAdapter(adapter);
+
+        if (this.shoppingListRecyclerView != null)
+            this.shoppingListRecyclerView.setAdapter(adapter);
     }
 
     @Override

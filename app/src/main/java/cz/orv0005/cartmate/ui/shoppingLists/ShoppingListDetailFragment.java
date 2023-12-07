@@ -2,27 +2,30 @@ package cz.orv0005.cartmate.ui.shoppingLists;
 
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.Toast;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.journeyapps.barcodescanner.ScanContract;
+import com.journeyapps.barcodescanner.ScanOptions;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
-import cz.orv0005.cartmate.MainActivity;
 import cz.orv0005.cartmate.R;
 import cz.orv0005.cartmate.SQLiteHelper;
 import cz.orv0005.cartmate.adapters.ShoppingListItemAdapter;
@@ -30,6 +33,8 @@ import cz.orv0005.cartmate.mappers.ShoppingListItemMapper;
 import cz.orv0005.cartmate.mappers.ShoppingListMapper;
 import cz.orv0005.cartmate.models.ShoppingList;
 import cz.orv0005.cartmate.models.ShoppingListItem;
+import cz.orv0005.cartmate.openfoodfacts.APIMapper;
+import cz.orv0005.cartmate.openfoodfacts.FoodFactItem;
 
 public class ShoppingListDetailFragment extends Fragment {
 
@@ -38,6 +43,39 @@ public class ShoppingListDetailFragment extends Fragment {
     private RecyclerView itemsRecyclerView;
     private ShoppingList shoppingList;
 
+    private final ActivityResultLauncher<ScanOptions> barcodeLauncher = registerForActivityResult(new ScanContract(),
+            result -> {
+                if (result.getContents() == null) {
+                    Toast.makeText(requireContext(), "Code scan cancelled", Toast.LENGTH_LONG).show();
+                } else {
+
+                    ExecutorService executor = Executors.newSingleThreadExecutor();
+
+                    Future<FoodFactItem> future = executor.submit(() -> (new APIMapper()).getByEan(result.getContents()));
+
+                    try {
+                        FoodFactItem i = future.get();
+
+                        if (i != null) {
+
+                            this.appendShoppingListItem(
+                                    new ShoppingListItem(
+                                            this.shoppingList.getId(),
+                                            0L,
+                                            i.getName(),
+                                            1,
+                                            1
+                                    )
+                            );
+                        } else {
+                            Toast.makeText(getContext(), "Product was not found.", Toast.LENGTH_LONG).show();
+                        }
+                    } catch (Exception e) {
+                        Toast.makeText(getContext(), "Error while loading product.", Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
+
 
     public ShoppingListDetailFragment() {
     }
@@ -45,11 +83,6 @@ public class ShoppingListDetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
 
         Bundle args = getArguments();
 
@@ -59,12 +92,15 @@ public class ShoppingListDetailFragment extends Fragment {
 
             this.shoppingList = m.fetch(args.getLong("shoppingListId"));
         }
+    }
 
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle("Shopping List \"" + this.shoppingList.getName() + "\"");
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_shopping_list_detail, container, false);
 
-        this.shoppingListItemMapper = new ShoppingListItemMapper(new SQLiteHelper(getContext()));
+        this.shoppingListItemMapper = new ShoppingListItemMapper(new SQLiteHelper(requireContext()));
         this.items = this.shoppingListItemMapper.fetchAllForList(this.shoppingList.getId());
 
         this.itemsRecyclerView = view.findViewById(R.id.itemsRecyclerView);
@@ -73,17 +109,8 @@ public class ShoppingListDetailFragment extends Fragment {
         this.itemsRecyclerView.setAdapter(new ShoppingListItemAdapter(this.items, position -> {
             ShoppingListItem i = items.get(position);
 
-            Log.d("itemName", i.getName());
+            //TODO: Implement item edit here
         }));
-
-        MainActivity mainActivity = (MainActivity) getActivity();
-
-        if (mainActivity != null) {
-            FloatingActionButton fab = mainActivity.findViewById(R.id.addShoppingListFab);
-
-            if (fab != null)
-                fab.hide();
-        }
 
         view.findViewById(R.id.addListItemFab).setOnClickListener(view1 -> showAddListItem());
 
@@ -98,8 +125,6 @@ public class ShoppingListDetailFragment extends Fragment {
                 int position = viewHolder.getAdapterPosition();
 
                 if (direction == ItemTouchHelper.LEFT) {
-
-
                     AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
                     builder.setMessage(R.string.do_you_want_to_remove_this_item).setPositiveButton(R.string.yes, (dialogInterface, i) -> {
 
@@ -124,24 +149,24 @@ public class ShoppingListDetailFragment extends Fragment {
         View dialogView = inflater.inflate(R.layout.dialog_add_list_item, null);
 
         EditText etName = dialogView.findViewById(R.id.editTextName);
-        EditText etCount = dialogView.findViewById(R.id.editTextCount);
+        EditText etCountToBuy = dialogView.findViewById(R.id.editTextCountToBuy);
 
         AlertDialog dialog = new AlertDialog.Builder(requireContext())
                 .setTitle("Add new list item")
                 .setView(dialogView)
                 .setPositiveButton("OK", (dialog1, whichButton) -> {
 
-                    String name = etName.getText().toString();
-                    Integer count = Integer.parseInt(etCount.getText().toString());
-
                     appendShoppingListItem(new ShoppingListItem(
                             this.shoppingList.getId(),
                             0L,
-                            name,
-                            count
+                            etName.getText().toString(),
+                            0,
+                            Integer.parseInt(etCountToBuy.getText().toString())
                     ));
                 })
                 .setNegativeButton("Cancel", null).create();
+
+        dialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Scan code", (dialogInterface, i) -> barcodeLauncher.launch(new ScanOptions().setBeepEnabled(false)));
 
         dialog.show();
     }
@@ -154,5 +179,10 @@ public class ShoppingListDetailFragment extends Fragment {
         Objects.requireNonNull(this.itemsRecyclerView.getAdapter()).notifyItemInserted(
                 this.items.size() - 1
         );
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 }

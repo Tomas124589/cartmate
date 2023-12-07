@@ -31,6 +31,7 @@ public class ShoppingListItemMapper extends DatabaseMapper {
         values.put("id_item", item.getIdItem());
         values.put("name", item.getName());
         values.put("count", item.getCount());
+        values.put("count_to_buy", item.getCountToBuy());
 
         long id = item.getId();
         if (id == 0) {
@@ -60,7 +61,8 @@ public class ShoppingListItemMapper extends DatabaseMapper {
                     c.getLong(c.getColumnIndexOrThrow("id_list")),
                     c.getLong(c.getColumnIndexOrThrow("id_item")),
                     c.getString(c.getColumnIndexOrThrow("name")),
-                    c.getInt(c.getColumnIndexOrThrow("count"))
+                    c.getInt(c.getColumnIndexOrThrow("count")),
+                    c.getInt(c.getColumnIndexOrThrow("count_to_buy"))
             );
 
             i.setId(c.getLong(c.getColumnIndexOrThrow("id")));

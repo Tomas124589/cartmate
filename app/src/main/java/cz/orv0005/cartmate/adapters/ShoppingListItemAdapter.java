@@ -44,7 +44,7 @@ public class ShoppingListItemAdapter extends Adapter<RecyclerView.ViewHolder> {
         ShoppingListItemViewHolder itemViewHolder = (ShoppingListItemViewHolder) holder;
 
         itemViewHolder.textViewName.setText(item.getName());
-        itemViewHolder.textViewCount.setText(item.getCount().toString());
+        itemViewHolder.textViewCount.setText(item.getCount().toString() + "/" + item.getCountToBuy().toString());
 
         itemViewHolder.btnMinus.setOnClickListener(view -> {
             item.setCount(item.getCount() - 1);
@@ -60,6 +60,9 @@ public class ShoppingListItemAdapter extends Adapter<RecyclerView.ViewHolder> {
 
         itemViewHolder.btnPlus.setOnClickListener(view -> {
             item.setCount(item.getCount() + 1);
+
+            if (item.getCount() > item.getCountToBuy())
+                item.setCount(item.getCountToBuy());
 
             ShoppingListItemMapper m = new ShoppingListItemMapper(new SQLiteHelper(view.getContext()));
             m.save(item);

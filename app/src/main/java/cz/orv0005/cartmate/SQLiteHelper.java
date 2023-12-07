@@ -42,6 +42,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 "    id_item INT NULL ," +
                 "    name TEXT NOT NULL ," +
                 "    count INT NOT NULL," +
+                "    count_to_buy INT NOT NULL," +
                 "    FOREIGN KEY (id_list) REFERENCES lists(id)," +
                 "    FOREIGN KEY (id_item) REFERENCES item(id)" +
                 ");";

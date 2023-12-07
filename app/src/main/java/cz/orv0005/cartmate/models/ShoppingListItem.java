@@ -6,12 +6,14 @@ public class ShoppingListItem {
     private final long idItem;
     private final String name;
     private Integer count;
+    private final Integer countToBuy;
 
-    public ShoppingListItem(Long idList, Long idItem, String name, Integer count) {
+    public ShoppingListItem(Long idList, Long idItem, String name, Integer count, Integer countToBuy) {
         this.idList = idList;
         this.idItem = idItem;
         this.name = name;
         this.count = count;
+        this.countToBuy = countToBuy;
     }
 
     public void setId(long id) {
@@ -40,5 +42,9 @@ public class ShoppingListItem {
 
     public Integer getCount() {
         return count;
+    }
+
+    public Integer getCountToBuy() {
+        return this.countToBuy;
     }
 }
