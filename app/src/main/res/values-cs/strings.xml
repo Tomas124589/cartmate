@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="navigation_drawer_open">Otevřít navigaci</string>
+    <string name="navigation_drawer_close">Zavřít navigaci</string>
+    <string name="nav_header_subtitle">Váš společník k nákupům!</string>
+    <string name="action_settings">Nastavení</string>
+    <string name="menu_home">Nákupní seznamy</string>
+    <string name="menu_products">Produkty</string>
+    <string name="next">Další</string>
+    <string name="previous">Předchozí</string>
+    <string name="name">Název</string>
+    <string name="count">Počet</string>
+    <string name="add_new_shopping_list">Přidat seznam</string>
+    <string name="total">Celkem</string>
+    <string name="shop_name">Název obchodu</string>
+    <string name="date">Datum</string>
+    <string name="date_of_shopping">Datum nákupu</string>
+    <string name="no">Ne</string>
+    <string name="yes">Ano</string>
+    <string name="do_you_want_to_remove_this_item">Chcete odstranit tuto položku?</string>
+    <string name="count_to_buy">Počet k zakoupení</string>
+    <string name="cancel">Zrušit</string>
+    <string name="edit_shopping_list">Upravit seznam</string>
+    <string name="error_when_loading_shopping_lists">Při načítání seznamů se vyskytla chyba</string>
+    <string name="name_is_empty">Jméno je prázdné</string>
+    <string name="shop_name_is_empty">Název obchodu je prázdný</string>
+    <string name="date_is_empty">Datum je prázdné</string>
+    <string name="code_scan_cancelled">Skenování kódu bylo zrušeno</string>
+    <string name="product_was_not_found">Produkt nebyl nalezen</string>
+    <string name="error_while_loading_product">Chyba při načítání produktu</string>
+    <string name="edit_list_item">Editovat položku</string>
+    <string name="count_to_buy_is_empty">Počet k zakoupení je prázný</string>
+    <string name="scan_code">Naskenovat kód</string>
+    <string name="shopping_list">Nákupní seznam</string>
+</resources>

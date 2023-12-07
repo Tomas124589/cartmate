@@ -46,7 +46,7 @@ public class ShoppingListDetailFragment extends Fragment {
     private final ActivityResultLauncher<ScanOptions> barcodeLauncher = registerForActivityResult(new ScanContract(),
             result -> {
                 if (result.getContents() == null) {
-                    Toast.makeText(requireContext(), "Code scan cancelled", Toast.LENGTH_LONG).show();
+                    Toast.makeText(requireContext(), R.string.code_scan_cancelled, Toast.LENGTH_LONG).show();
                 } else {
 
                     ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -68,10 +68,10 @@ public class ShoppingListDetailFragment extends Fragment {
                                     ), -1
                             );
                         } else {
-                            Toast.makeText(getContext(), "Product was not found.", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getContext(), R.string.product_was_not_found, Toast.LENGTH_LONG).show();
                         }
                     } catch (Exception e) {
-                        Toast.makeText(getContext(), "Error while loading product.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), R.string.error_while_loading_product, Toast.LENGTH_LONG).show();
                     }
                 }
             });
@@ -157,16 +157,31 @@ public class ShoppingListDetailFragment extends Fragment {
         }
 
         AlertDialog dialog = new AlertDialog.Builder(requireContext())
-                .setTitle("Add new list item")
+                .setTitle(R.string.edit_list_item)
                 .setView(dialogView)
-                .setPositiveButton("OK", (dialog1, whichButton) -> {
+                .setPositiveButton(R.string.ok, (dialog1, whichButton) -> {
+
+                    String name = etName.getText().toString();
+
+                    if (name.equals("")) {
+                        Toast.makeText(getContext(), R.string.name_is_empty, Toast.LENGTH_LONG).show();
+                        return;
+
+                    }
+
+                    String countToBuyString = etCountToBuy.getText().toString().trim();
+                    if (countToBuyString.equals("")) {
+                        Toast.makeText(getContext(), R.string.count_to_buy_is_empty, Toast.LENGTH_LONG).show();
+                        return;
+
+                    }
 
                     ShoppingListItem i = new ShoppingListItem(
                             this.shoppingList.getId(),
                             item == null ? 0L : item.getIdItem(),
-                            etName.getText().toString(),
+                            name,
                             item == null ? 0 : item.getCount(),
-                            Integer.parseInt(etCountToBuy.getText().toString())
+                            Integer.parseInt(countToBuyString)
                     );
 
                     if (item != null) {
@@ -175,9 +190,9 @@ public class ShoppingListDetailFragment extends Fragment {
 
                     actualizeItem(i, this.items.indexOf(item));
                 })
-                .setNegativeButton("Cancel", null).create();
+                .setNegativeButton(R.string.cancel, null).create();
 
-        dialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Scan code", (dialogInterface, i) -> barcodeLauncher.launch(new ScanOptions().setBeepEnabled(false)));
+        dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.scan_code), (dialogInterface, i) -> barcodeLauncher.launch(new ScanOptions().setBeepEnabled(false)));
 
         dialog.show();
     }

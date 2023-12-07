@@ -11,6 +11,6 @@
         <item
             android:id="@+id/nav_products"
             android:icon="@drawable/baseline_edit_note_24"
-            android:title="@string/menu_gallery" />
+            android:title="@string/menu_products" />
     </group>
 </menu>

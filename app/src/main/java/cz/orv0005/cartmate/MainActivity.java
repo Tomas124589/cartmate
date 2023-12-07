@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (ParseException e) {
 
             Log.e("ParseException", e.toString());
-            Toast.makeText(this, "Error when loading shopping lists.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.error_when_loading_shopping_lists, Toast.LENGTH_SHORT).show();
         } catch (SQLiteException e) {
 
             Log.e("SQLException", e.toString());
@@ -152,6 +152,20 @@ public class MainActivity extends AppCompatActivity {
                     String name = etName.getText().toString();
                     String shopName = etShopName.getText().toString();
                     String date = etDate.getText().toString();
+
+                    if (name.equals("")) {
+                        Toast.makeText(getBaseContext(), R.string.name_is_empty, Toast.LENGTH_LONG).show();
+                        return;
+
+                    } else if (shopName.equals("")) {
+                        Toast.makeText(getBaseContext(), R.string.shop_name_is_empty, Toast.LENGTH_LONG).show();
+                        return;
+
+                    } else if (date.equals("")) {
+                        Toast.makeText(getBaseContext(), R.string.date_is_empty, Toast.LENGTH_LONG).show();
+                        return;
+
+                    }
 
                     ShoppingList l = new ShoppingList(
                             name,
