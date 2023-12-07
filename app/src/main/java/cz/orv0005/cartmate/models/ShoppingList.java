@@ -40,8 +40,4 @@ public class ShoppingList {
     public LocalDate getDate() {
         return date;
     }
-
-    public Integer getTotalItemsCount() {
-        return 0;
-    }
 }

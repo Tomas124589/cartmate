@@ -47,7 +47,6 @@ public class ShoppingListAdapter extends Adapter<ViewHolder> {
         listViewHolder.textViewName.setText(shoppingList.getName());
         listViewHolder.textViewShopName.setText(shoppingList.getShopName());
         listViewHolder.textViewDate.setText(SQLiteHelper.localDate2str(shoppingList.getDate()));
-        listViewHolder.textViewTotal.setText(String.valueOf(shoppingList.getTotalItemsCount()));
     }
 
     @Override
@@ -59,14 +58,12 @@ public class ShoppingListAdapter extends Adapter<ViewHolder> {
         TextView textViewName;
         TextView textViewShopName;
         TextView textViewDate;
-        TextView textViewTotal;
 
         ShoppingListViewHolder(@NonNull View itemView, OnClickListener listener, OnLongClickListener longClickListener) {
             super(itemView);
             textViewName = itemView.findViewById(R.id.name);
             textViewShopName = itemView.findViewById(R.id.count);
             textViewDate = itemView.findViewById(R.id.date);
-            textViewTotal = itemView.findViewById(R.id.total);
 
             itemView.setOnClickListener(view -> {
                 if (listener != null) {
