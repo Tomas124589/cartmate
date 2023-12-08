@@ -14,7 +14,11 @@ public class ProductsFragment extends Fragment {
 
     private FragmentProductsBinding binding;
 
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            ViewGroup container,
+            Bundle savedInstanceState
+    ) {
         binding = FragmentProductsBinding.inflate(inflater, container, false);
 
         return binding.getRoot();

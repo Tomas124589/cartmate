@@ -23,7 +23,10 @@ public class ShoppingListAdapter extends Adapter<ViewHolder> {
     private final OnClickListener listener;
     private final OnLongClickListener longClickListener;
 
-    public ShoppingListAdapter(List<ShoppingList> shoppingLists, OnClickListener listener, OnLongClickListener longClickListener) {
+    public ShoppingListAdapter(
+            List<ShoppingList> shoppingLists,
+            OnClickListener listener,
+            OnLongClickListener longClickListener) {
 
         this.shoppingLists = shoppingLists;
         this.listener = listener;
@@ -33,14 +36,17 @@ public class ShoppingListAdapter extends Adapter<ViewHolder> {
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.shopping_list_row, parent, false);
+        View view = LayoutInflater.from(
+                parent.getContext()).inflate(
+                R.layout.shopping_list_row,
+                parent,
+                false
+        );
         return new ShoppingListViewHolder(view, listener, longClickListener);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-
         ShoppingList shoppingList = shoppingLists.get(position);
         ShoppingListViewHolder listViewHolder = (ShoppingListViewHolder) holder;
 
@@ -55,11 +61,16 @@ public class ShoppingListAdapter extends Adapter<ViewHolder> {
     }
 
     public static class ShoppingListViewHolder extends ViewHolder {
+
         TextView textViewName;
         TextView textViewShopName;
         TextView textViewDate;
 
-        ShoppingListViewHolder(@NonNull View itemView, OnClickListener listener, OnLongClickListener longClickListener) {
+        ShoppingListViewHolder(
+                @NonNull View itemView,
+                OnClickListener listener,
+                OnLongClickListener longClickListener
+        ) {
             super(itemView);
             textViewName = itemView.findViewById(R.id.name);
             textViewShopName = itemView.findViewById(R.id.count);

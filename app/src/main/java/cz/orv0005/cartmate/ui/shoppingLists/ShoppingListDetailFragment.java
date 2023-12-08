@@ -43,15 +43,21 @@ public class ShoppingListDetailFragment extends Fragment {
     private RecyclerView itemsRecyclerView;
     private ShoppingList shoppingList;
 
-    private final ActivityResultLauncher<ScanOptions> barcodeLauncher = registerForActivityResult(new ScanContract(),
+    private final ActivityResultLauncher<ScanOptions> barcodeLauncher = registerForActivityResult(
+            new ScanContract(),
             result -> {
                 if (result.getContents() == null) {
-                    Toast.makeText(requireContext(), R.string.code_scan_cancelled, Toast.LENGTH_LONG).show();
+                    Toast.makeText(
+                            requireContext(),
+                            R.string.code_scan_cancelled,
+                            Toast.LENGTH_LONG).show();
                 } else {
 
                     ExecutorService executor = Executors.newSingleThreadExecutor();
 
-                    Future<FoodFactItem> future = executor.submit(() -> (new APIMapper()).getByEan(result.getContents()));
+                    Future<FoodFactItem> future = executor.submit(() -> (
+                            new APIMapper()).getByEan(result.getContents())
+                    );
 
                     try {
                         FoodFactItem i = future.get();
@@ -68,10 +74,16 @@ public class ShoppingListDetailFragment extends Fragment {
                                     ), -1
                             );
                         } else {
-                            Toast.makeText(getContext(), R.string.product_was_not_found, Toast.LENGTH_LONG).show();
+                            Toast.makeText(
+                                    getContext(),
+                                    R.string.product_was_not_found,
+                                    Toast.LENGTH_LONG).show();
                         }
                     } catch (Exception e) {
-                        Toast.makeText(getContext(), R.string.error_while_loading_product, Toast.LENGTH_LONG).show();
+                        Toast.makeText(
+                                getContext(),
+                                R.string.error_while_loading_product,
+                                Toast.LENGTH_LONG).show();
                     }
                 }
             });
@@ -97,10 +109,15 @@ public class ShoppingListDetailFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        View view = inflater.inflate(
+                R.layout.fragment_shopping_list_detail,
+                container,
+                false
+        );
 
-        View view = inflater.inflate(R.layout.fragment_shopping_list_detail, container, false);
-
-        this.shoppingListItemMapper = new ShoppingListItemMapper(new SQLiteHelper(requireContext()));
+        this.shoppingListItemMapper = new ShoppingListItemMapper(
+                new SQLiteHelper(requireContext())
+        );
         this.items = this.shoppingListItemMapper.fetchAllForList(this.shoppingList.getId());
 
         this.itemsRecyclerView = view.findViewById(R.id.itemsRecyclerView);
@@ -114,30 +131,43 @@ public class ShoppingListDetailFragment extends Fragment {
 
         view.findViewById(R.id.addListItemFab).setOnClickListener(view1 -> showAddListItem(null));
 
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
-            @Override
-            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-                return false;
-            }
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(
+                new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+                    @Override
+                    public boolean onMove(
+                            @NonNull RecyclerView recyclerView,
+                            @NonNull RecyclerView.ViewHolder viewHolder,
+                            @NonNull RecyclerView.ViewHolder target
+                    ) {
+                        return false;
+                    }
 
-            @Override
-            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                int position = viewHolder.getAdapterPosition();
+                    @Override
+                    public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                        int position = viewHolder.getAdapterPosition();
 
-                if (direction == ItemTouchHelper.LEFT) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-                    builder.setMessage(R.string.do_you_want_to_remove_this_item).setPositiveButton(R.string.yes, (dialogInterface, i) -> {
+                        if (direction == ItemTouchHelper.LEFT) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+                            builder.setMessage(
+                                    R.string.do_you_want_to_remove_this_item
+                            ).setPositiveButton(R.string.yes, (dialogInterface, i) -> {
 
-                        ShoppingListItemMapper m = new ShoppingListItemMapper(new SQLiteHelper(requireContext()));
-                        m.delete(items.get(position).getId());
+                                ShoppingListItemMapper m = new ShoppingListItemMapper(
+                                        new SQLiteHelper(requireContext()));
+                                m.delete(items.get(position).getId());
 
-                        items.remove(position);
+                                items.remove(position);
 
-                        Objects.requireNonNull(itemsRecyclerView.getAdapter()).notifyItemRemoved(position);
-                    }).setNegativeButton(R.string.no, (dialogInterface, i) -> Objects.requireNonNull(itemsRecyclerView.getAdapter()).notifyItemChanged(position)).show();
-                }
-            }
-        });
+                                Objects.requireNonNull(itemsRecyclerView.getAdapter())
+                                        .notifyItemRemoved(position);
+                            }).setNegativeButton(
+                                    R.string.no,
+                                    (dialogInterface, i) -> Objects
+                                            .requireNonNull(itemsRecyclerView.getAdapter())
+                                            .notifyItemChanged(position)).show();
+                        }
+                    }
+                });
         itemTouchHelper.attachToRecyclerView(itemsRecyclerView);
 
         return view;
@@ -164,14 +194,20 @@ public class ShoppingListDetailFragment extends Fragment {
                     String name = etName.getText().toString();
 
                     if (name.equals("")) {
-                        Toast.makeText(getContext(), R.string.name_is_empty, Toast.LENGTH_LONG).show();
+                        Toast.makeText(
+                                getContext(),
+                                R.string.name_is_empty,
+                                Toast.LENGTH_LONG).show();
                         return;
 
                     }
 
                     String countToBuyString = etCountToBuy.getText().toString().trim();
                     if (countToBuyString.equals("")) {
-                        Toast.makeText(getContext(), R.string.count_to_buy_is_empty, Toast.LENGTH_LONG).show();
+                        Toast.makeText(
+                                getContext(),
+                                R.string.count_to_buy_is_empty,
+                                Toast.LENGTH_LONG).show();
                         return;
 
                     }
@@ -192,7 +228,11 @@ public class ShoppingListDetailFragment extends Fragment {
                 })
                 .setNegativeButton(R.string.cancel, null).create();
 
-        dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.scan_code), (dialogInterface, i) -> barcodeLauncher.launch(new ScanOptions().setBeepEnabled(false)));
+        dialog.setButton(
+                AlertDialog.BUTTON_NEUTRAL,
+                getString(R.string.scan_code),
+                (dialogInterface, i) -> barcodeLauncher.launch(
+                        new ScanOptions().setBeepEnabled(false)));
 
         dialog.show();
     }

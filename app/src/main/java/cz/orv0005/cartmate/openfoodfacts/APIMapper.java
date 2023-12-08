@@ -17,7 +17,9 @@ public class APIMapper {
         URL url = new URL(BASE_URL + "product/" + ean + ".json");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        BufferedReader reader = new BufferedReader(
+                new InputStreamReader(connection.getInputStream())
+        );
         StringBuilder strBuilder = new StringBuilder();
 
         String line;

@@ -29,7 +29,11 @@ public class ShoppingListsFragment extends Fragment {
 
     private FragmentShoppingListsBinding binding;
 
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            ViewGroup container,
+            Bundle savedInstanceState
+    ) {
         binding = FragmentShoppingListsBinding.inflate(inflater, container, false);
 
         MainActivity mainActivity = (MainActivity) getActivity();
@@ -40,20 +44,31 @@ public class ShoppingListsFragment extends Fragment {
         ShoppingListAdapter adapter = new ShoppingListAdapter(lists, position -> {
             ShoppingList l = lists.get(position);
 
-            NavController navController = Navigation.findNavController(mainActivity, R.id.nav_host_fragment_content_main);
+            NavController navController = Navigation.findNavController(
+                    mainActivity,
+                    R.id.nav_host_fragment_content_main
+            );
 
             Bundle b = new Bundle();
             b.putLong("shoppingListId", l.getId());
 
             navController.navigate(R.id.shoppingListDetail, b);
-        }, position -> mainActivity.showAddShoppingListDialog(lists.get(position), shoppingListRecyclerView));
+        }, position -> mainActivity.showAddShoppingListDialog(
+                lists.get(position),
+                shoppingListRecyclerView)
+        );
 
         shoppingListRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         shoppingListRecyclerView.setAdapter(adapter);
 
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(
+                0,
+                ItemTouchHelper.LEFT) {
             @Override
-            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            public boolean onMove(
+                    @NonNull RecyclerView recyclerView,
+                    @NonNull RecyclerView.ViewHolder viewHolder,
+                    @NonNull RecyclerView.ViewHolder target) {
                 return false;
             }
 
@@ -66,15 +81,20 @@ public class ShoppingListsFragment extends Fragment {
                 if (direction == ItemTouchHelper.LEFT) {
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-                    builder.setMessage(R.string.do_you_want_to_remove_this_item).setPositiveButton(R.string.yes, (dialogInterface, i) -> {
+                    builder.setMessage(R.string.do_you_want_to_remove_this_item)
+                            .setPositiveButton(R.string.yes, (dialogInterface, i) -> {
 
-                        ShoppingListMapper m = new ShoppingListMapper(new SQLiteHelper(requireContext()));
-                        m.delete(lists.get(position).getId());
+                                ShoppingListMapper m = new ShoppingListMapper(
+                                        new SQLiteHelper(requireContext()));
+                                m.delete(lists.get(position).getId());
 
-                        lists.remove(position);
+                                lists.remove(position);
 
-                        Objects.requireNonNull(shoppingListRecyclerView.getAdapter()).notifyItemRemoved(position);
-                    }).setNegativeButton(R.string.no, (dialogInterface, i) -> Objects.requireNonNull(shoppingListRecyclerView.getAdapter()).notifyItemChanged(position)).show();
+                                Objects.requireNonNull(shoppingListRecyclerView.getAdapter())
+                                        .notifyItemRemoved(position);
+                            }).setNegativeButton(R.string.no, (dialogInterface, i) ->
+                                    Objects.requireNonNull(shoppingListRecyclerView.getAdapter())
+                                            .notifyItemChanged(position)).show();
                 }
             }
         });

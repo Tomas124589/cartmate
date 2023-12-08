@@ -46,11 +46,9 @@ public class MainActivity extends AppCompatActivity {
     private ShoppingListMapper shoppingListMapper;
     private List<ShoppingList> shoppingLists = new ArrayList<>();
     private RecyclerView shoppingListRecyclerView;
-
     private FloatingActionButton fab;
 
     public static String getLocalDatePattern(Context context) {
-
         SimpleDateFormat f = (SimpleDateFormat) DateFormat.getDateFormat(context);
         return f.toLocalizedPattern();
     }
@@ -63,20 +61,32 @@ public class MainActivity extends AppCompatActivity {
 
         this.shoppingListMapper = new ShoppingListMapper(new SQLiteHelper(this));
 
-        cz.orv0005.cartmate.databinding.ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
+        cz.orv0005.cartmate.databinding.ActivityMainBinding binding = ActivityMainBinding.inflate(
+                getLayoutInflater());
         setContentView(binding.getRoot());
 
         setSupportActionBar(binding.appBarMain.toolbar);
 
         this.fab = binding.appBarMain.addShoppingListFab;
-        this.fab.setOnClickListener(view -> showAddShoppingListDialog(null, shoppingListRecyclerView));
+        this.fab.setOnClickListener(
+                view -> showAddShoppingListDialog(null, shoppingListRecyclerView)
+        );
 
         DrawerLayout drawer = binding.drawerLayout;
         NavigationView navigationView = binding.navView;
 
-        mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.nav_shopping_lists, R.id.nav_products).setOpenableLayout(drawer).build();
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
+        mAppBarConfiguration = new AppBarConfiguration.Builder(
+                R.id.nav_shopping_lists,
+                R.id.nav_products).setOpenableLayout(drawer).build();
+        NavController navController = Navigation.findNavController(
+                this,
+                R.id.nav_host_fragment_content_main
+        );
+        NavigationUI.setupActionBarWithNavController(
+                this,
+                navController,
+                mAppBarConfiguration
+        );
         NavigationUI.setupWithNavController(navigationView, navController);
 
         navController.addOnDestinationChangedListener((navController1, navDestination, bundle) -> {
@@ -93,11 +103,17 @@ public class MainActivity extends AppCompatActivity {
         } catch (ParseException e) {
 
             Log.e("ParseException", e.toString());
-            Toast.makeText(this, R.string.error_when_loading_shopping_lists, Toast.LENGTH_SHORT).show();
+            Toast.makeText(
+                    this,
+                    R.string.error_when_loading_shopping_lists,
+                    Toast.LENGTH_SHORT).show();
         } catch (SQLiteException e) {
 
             Log.e("SQLException", e.toString());
-            Toast.makeText(this, "Error when loading shopping lists.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(
+                    this,
+                    R.string.error_when_loading_shopping_lists,
+                    Toast.LENGTH_SHORT).show();
         }
 
         this.shoppingListRecyclerView = findViewById(R.id.shoppingListsRecyclerMenu);
@@ -108,7 +124,8 @@ public class MainActivity extends AppCompatActivity {
             b.putLong("shoppingListId", l.getId());
 
             navController.navigate(R.id.shoppingListDetail, b);
-        }, position -> showAddShoppingListDialog(shoppingLists.get(position), shoppingListRecyclerView));
+        }, position -> showAddShoppingListDialog(
+                shoppingLists.get(position), shoppingListRecyclerView));
 
         if (this.shoppingListRecyclerView != null)
             this.shoppingListRecyclerView.setAdapter(adapter);
@@ -122,8 +139,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onSupportNavigateUp() {
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        return NavigationUI.navigateUp(navController, mAppBarConfiguration) || super.onSupportNavigateUp();
+        NavController navController = Navigation.findNavController(
+                this,
+                R.id.nav_host_fragment_content_main);
+        return NavigationUI.navigateUp(
+                navController,
+                mAppBarConfiguration) || super.onSupportNavigateUp();
     }
 
     public void showAddShoppingListDialog(ShoppingList list, RecyclerView recyclerView) {
@@ -141,7 +162,9 @@ public class MainActivity extends AppCompatActivity {
 
             etName.setText(list.getName());
             etShopName.setText(list.getShopName());
-            etDate.setText(list.getDate().format(DateTimeFormatter.ofPattern(MainActivity.getLocalDatePattern(MainActivity.this), Locale.getDefault())));
+            etDate.setText(list.getDate().format(
+                    DateTimeFormatter.ofPattern(MainActivity.getLocalDatePattern(
+                            MainActivity.this), Locale.getDefault())));
         }
 
         AlertDialog dialog = new AlertDialog.Builder(this)
@@ -154,15 +177,24 @@ public class MainActivity extends AppCompatActivity {
                     String date = etDate.getText().toString();
 
                     if (name.equals("")) {
-                        Toast.makeText(getBaseContext(), R.string.name_is_empty, Toast.LENGTH_LONG).show();
+                        Toast.makeText(
+                                getBaseContext(),
+                                R.string.name_is_empty,
+                                Toast.LENGTH_LONG).show();
                         return;
 
                     } else if (shopName.equals("")) {
-                        Toast.makeText(getBaseContext(), R.string.shop_name_is_empty, Toast.LENGTH_LONG).show();
+                        Toast.makeText(
+                                getBaseContext(),
+                                R.string.shop_name_is_empty,
+                                Toast.LENGTH_LONG).show();
                         return;
 
                     } else if (date.equals("")) {
-                        Toast.makeText(getBaseContext(), R.string.date_is_empty, Toast.LENGTH_LONG).show();
+                        Toast.makeText(
+                                getBaseContext(),
+                                R.string.date_is_empty,
+                                Toast.LENGTH_LONG).show();
                         return;
 
                     }
@@ -170,7 +202,12 @@ public class MainActivity extends AppCompatActivity {
                     ShoppingList l = new ShoppingList(
                             name,
                             shopName,
-                            LocalDate.parse(date, DateTimeFormatter.ofPattern(MainActivity.getLocalDatePattern(MainActivity.this), Locale.getDefault()))
+                            LocalDate.parse(
+                                    date,
+                                    DateTimeFormatter.ofPattern(
+                                            MainActivity.getLocalDatePattern(
+                                                    MainActivity.this),
+                                            Locale.getDefault()))
                     );
 
                     if (list != null)
@@ -185,11 +222,19 @@ public class MainActivity extends AppCompatActivity {
             calendar.set(Calendar.MONTH, month);
             calendar.set(Calendar.DAY_OF_MONTH, day);
 
-            SimpleDateFormat dateFormat = new SimpleDateFormat(MainActivity.getLocalDatePattern(MainActivity.this), Locale.getDefault());
+            SimpleDateFormat dateFormat = new SimpleDateFormat(
+                    MainActivity.getLocalDatePattern(MainActivity.this),
+                    Locale.getDefault());
             etDate.setText(dateFormat.format(calendar.getTime()));
         };
 
-        etDate.setOnClickListener(view -> new DatePickerDialog(MainActivity.this, dateListener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show());
+        etDate.setOnClickListener(view -> new DatePickerDialog(
+                MainActivity.this,
+                dateListener,
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)).show()
+        );
 
         dialog.show();
     }

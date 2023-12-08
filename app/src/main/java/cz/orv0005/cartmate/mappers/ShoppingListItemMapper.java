@@ -38,8 +38,12 @@ public class ShoppingListItemMapper extends DatabaseMapper {
             id = db.insertOrThrow(this.getTableName(), null, values);
 
         } else {
-            db.update(this.getTableName(), values, "id=?", new String[]{String.valueOf(item.getId())});
-
+            db.update(
+                    this.getTableName(),
+                    values,
+                    "id=?",
+                    new String[]{String.valueOf(item.getId())}
+            );
         }
 
         db.close();
@@ -53,7 +57,15 @@ public class ShoppingListItemMapper extends DatabaseMapper {
 
         SQLiteDatabase db = this.helper.getReadableDatabase();
 
-        Cursor c = db.query(this.getTableName(), null, "id_list = ?", new String[]{idList.toString()}, null, null, null);
+        Cursor c = db.query(
+                this.getTableName(),
+                null,
+                "id_list = ?",
+                new String[]{idList.toString()},
+                null,
+                null,
+                null
+        );
 
         while (c.moveToNext()) {
 

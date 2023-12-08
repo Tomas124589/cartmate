@@ -8,7 +8,13 @@ public class ShoppingListItem {
     private Integer count;
     private final Integer countToBuy;
 
-    public ShoppingListItem(Long idList, Long idItem, String name, Integer count, Integer countToBuy) {
+    public ShoppingListItem(
+            Long idList,
+            Long idItem,
+            String name,
+            Integer count,
+            Integer countToBuy
+    ) {
         this.idList = idList;
         this.idItem = idItem;
         this.name = name;

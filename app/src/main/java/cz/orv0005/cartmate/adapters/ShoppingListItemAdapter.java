@@ -33,18 +33,24 @@ public class ShoppingListItemAdapter extends Adapter<RecyclerView.ViewHolder> {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.shopping_list_item_row, parent, false);
+        View view = LayoutInflater.from(
+                parent.getContext()).inflate(
+                R.layout.shopping_list_item_row,
+                parent,
+                false
+        );
         return new ShoppingListItemViewHolder(view, listener);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-
         ShoppingListItem item = items.get(position);
         ShoppingListItemViewHolder itemViewHolder = (ShoppingListItemViewHolder) holder;
 
         itemViewHolder.textViewName.setText(item.getName());
-        itemViewHolder.textViewCount.setText(item.getCount().toString() + "/" + item.getCountToBuy().toString());
+        itemViewHolder.textViewCount.setText(
+                item.getCount().toString() + "/" + item.getCountToBuy().toString()
+        );
 
         itemViewHolder.btnMinus.setOnClickListener(view -> {
             item.setCount(item.getCount() - 1);
@@ -52,7 +58,9 @@ public class ShoppingListItemAdapter extends Adapter<RecyclerView.ViewHolder> {
             if (item.getCount() < 0)
                 item.setCount(0);
 
-            ShoppingListItemMapper m = new ShoppingListItemMapper(new SQLiteHelper(view.getContext()));
+            ShoppingListItemMapper m = new ShoppingListItemMapper(
+                    new SQLiteHelper(view.getContext())
+            );
             m.save(item);
 
             notifyItemChanged(position);
@@ -64,11 +72,12 @@ public class ShoppingListItemAdapter extends Adapter<RecyclerView.ViewHolder> {
             if (item.getCount() > item.getCountToBuy())
                 item.setCount(item.getCountToBuy());
 
-            ShoppingListItemMapper m = new ShoppingListItemMapper(new SQLiteHelper(view.getContext()));
+            ShoppingListItemMapper m = new ShoppingListItemMapper(
+                    new SQLiteHelper(view.getContext())
+            );
             m.save(item);
 
             notifyItemChanged(position);
-
         });
     }
 

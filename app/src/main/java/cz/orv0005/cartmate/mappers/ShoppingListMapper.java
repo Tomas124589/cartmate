@@ -26,7 +26,6 @@ public class ShoppingListMapper extends DatabaseMapper {
     }
 
     public long save(ShoppingList list) throws SQLiteException {
-
         SQLiteDatabase db = helper.getWritableDatabase();
         DateTimeFormatter f = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.getDefault());
 
@@ -40,7 +39,12 @@ public class ShoppingListMapper extends DatabaseMapper {
             id = db.insertOrThrow(this.getTableName(), null, values);
 
         } else {
-            db.update(this.getTableName(), values, "id=?", new String[]{String.valueOf(list.getId())});
+            db.update(
+                    this.getTableName(),
+                    values,
+                    "id=?",
+                    new String[]{String.valueOf(list.getId())}
+            );
         }
 
         db.close();
@@ -49,15 +53,20 @@ public class ShoppingListMapper extends DatabaseMapper {
     }
 
     public ShoppingList fetch(long id) throws SQLiteException {
-
         ShoppingList result = null;
 
         SQLiteDatabase db = this.helper.getReadableDatabase();
 
-        Cursor c = db.query(this.getTableName(), null, "id = ?", new String[]{String.valueOf(id)}, null, null, null);
+        Cursor c = db.query(
+                this.getTableName(),
+                null,
+                "id = ?",
+                new String[]{String.valueOf(id)},
+                null,
+                null, null
+        );
 
         while (c.moveToNext()) {
-
             result = new ShoppingList(
                     c.getString(c.getColumnIndexOrThrow("name")),
                     c.getString(c.getColumnIndexOrThrow("store")),
@@ -74,15 +83,21 @@ public class ShoppingListMapper extends DatabaseMapper {
     }
 
     public List<ShoppingList> fetchAll() throws SQLiteException, ParseException {
-
         List<ShoppingList> result = new ArrayList<>();
 
         SQLiteDatabase db = this.helper.getReadableDatabase();
 
-        Cursor c = db.query(this.getTableName(), null, null, null, null, null, null);
+        Cursor c = db.query(
+                this.getTableName(),
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
 
         while (c.moveToNext()) {
-
             ShoppingList l = new ShoppingList(
                     c.getString(c.getColumnIndexOrThrow("name")),
                     c.getString(c.getColumnIndexOrThrow("store")),
