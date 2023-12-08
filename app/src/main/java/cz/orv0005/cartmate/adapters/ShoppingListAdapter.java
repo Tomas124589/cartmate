@@ -1,6 +1,8 @@
 package cz.orv0005.cartmate.adapters;
 
-import static androidx.recyclerview.widget.RecyclerView.*;
+import static androidx.recyclerview.widget.RecyclerView.Adapter;
+import static androidx.recyclerview.widget.RecyclerView.NO_POSITION;
+import static androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import android.view.LayoutInflater;
 import android.view.View;
