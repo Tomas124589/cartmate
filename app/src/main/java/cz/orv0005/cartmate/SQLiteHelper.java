@@ -47,17 +47,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 "    FOREIGN KEY (id_item) REFERENCES item(id)" +
                 ");";
 
-        String createItemTable = "CREATE TABLE item(" +
-                "    id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "    name TEXT," +
-                "    ean INTEGER UNIQUE," +
-                "    category TEXT," +
-                "    unit TEXT" +
-                ");";
-
         db.execSQL(createListsTable);
         db.execSQL(createListItemTable);
-        db.execSQL(createItemTable);
     }
 
     @Override
